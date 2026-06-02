@@ -17,6 +17,7 @@ func _ready() -> void:
 	_game_over_panel.hide()
 	_on_score_changed(GameManager.score)
 	_on_lives_changed(GameManager.lives)
+	AudioManager.play_music()
 
 
 func _on_score_changed(new_score: int) -> void:
@@ -30,6 +31,7 @@ func _on_lives_changed(new_lives: int) -> void:
 func _on_game_over() -> void:
 	_final_score_label.text = "Final Score: %d" % GameManager.score
 	_game_over_panel.show()
+	AudioManager.stop_music()
 
 
 func _on_restart_pressed() -> void:

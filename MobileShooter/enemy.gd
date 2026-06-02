@@ -41,8 +41,15 @@ func _on_area_entered(area: Area2D) -> void:
 	var death_position := global_position
 	GameManager.add_score(1)
 	area.queue_free()
+	_spawn_explosion(death_position)
 	_try_drop_powerup(death_position)
 	queue_free()
+
+
+func _spawn_explosion(world_position: Vector2) -> void:
+	var effects_parent := get_tree().current_scene.get_node_or_null("Effects")
+	if effects_parent:
+		Explosion.spawn(effects_parent, world_position)
 
 
 func _try_drop_powerup(at_position: Vector2) -> void:

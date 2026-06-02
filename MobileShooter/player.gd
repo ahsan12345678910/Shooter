@@ -61,6 +61,7 @@ func shoot() -> void:
 		_spawn_bullet(bullet_spawn_offset + Vector2(double_shoot_spread, 0))
 
 	_shoot_cooldown_left = shoot_cooldown
+	AudioManager.play_shoot()
 	_vibrate_shoot()
 
 

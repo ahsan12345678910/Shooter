@@ -1,12 +1,19 @@
-[gd_scene load_steps=5 format=3 uid="uid://c8main01scene2d"]
+[gd_scene load_steps=6 format=3 uid="uid://c8main01scene2d"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_main"]
 [ext_resource type="Script" path="res://enemy_spawner.gd" id="2_spawner"]
 [ext_resource type="PackedScene" uid="uid://bqx8player01scene" path="res://Player.tscn" id="3_player"]
 [ext_resource type="PackedScene" uid="uid://dmobilecontrols01" path="res://MobileControls.tscn" id="4_mobile_controls"]
+[ext_resource type="Script" path="res://stars_background.gd" id="5_stars"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
+
+[node name="StarsBackground" type="Node2D" parent="."]
+z_index = -10
+script = ExtResource("5_stars")
+
+[node name="Effects" type="Node2D" parent="."]
 
 [node name="Bullets" type="Node2D" parent="."]
 
