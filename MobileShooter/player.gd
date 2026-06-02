@@ -34,7 +34,7 @@ func _process(delta: float) -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if GameManager.is_game_over:
+	if GameManager.is_game_over or GameManager.is_paused:
 		return
 
 	var direction := _get_movement_direction()
@@ -45,14 +45,14 @@ func _physics_process(_delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if GameManager.is_game_over:
+	if GameManager.is_game_over or GameManager.is_paused:
 		return
 	if event.is_action_pressed("ui_accept"):
 		shoot()
 
 
 func shoot() -> void:
-	if GameManager.is_game_over or _shoot_cooldown_left > 0.0:
+	if GameManager.is_game_over or GameManager.is_paused or _shoot_cooldown_left > 0.0:
 		return
 
 	_spawn_bullet(bullet_spawn_offset)

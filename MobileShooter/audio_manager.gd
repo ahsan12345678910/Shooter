@@ -32,6 +32,10 @@ func stop_music() -> void:
 	_music_player.stop()
 
 
+func set_music_paused(paused: bool) -> void:
+	_music_player.stream_paused = paused
+
+
 func play_powerup_collect() -> void:
 	_pickup_player.stop()
 	_pickup_player.play()
