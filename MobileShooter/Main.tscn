@@ -12,6 +12,8 @@ script = ExtResource("1_main")
 
 [node name="Enemies" type="Node2D" parent="."]
 
+[node name="Powerups" type="Node2D" parent="."]
+
 [node name="EnemySpawner" type="Node" parent="."]
 script = ExtResource("2_spawner")
 

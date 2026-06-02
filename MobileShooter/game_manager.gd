@@ -26,6 +26,13 @@ func add_score(amount: int = 1) -> void:
 	score_changed.emit(score)
 
 
+func add_life(amount: int = 1) -> void:
+	if is_game_over:
+		return
+	lives += amount
+	lives_changed.emit(lives)
+
+
 func lose_life() -> void:
 	if is_game_over:
 		return

@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://dmobilecontrols01"]
+[gd_scene format=3 uid="uid://b2fhq2qra0m25"]
 
 [ext_resource type="Script" path="res://mobile_controls.gd" id="1_controls"]
 [ext_resource type="Script" path="res://virtual_joystick.gd" id="2_joystick"]
