@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://c8main01scene2d"]
+[gd_scene load_steps=5 format=3 uid="uid://c8main01scene2d"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_main"]
 [ext_resource type="Script" path="res://enemy_spawner.gd" id="2_spawner"]
 [ext_resource type="PackedScene" uid="uid://bqx8player01scene" path="res://Player.tscn" id="3_player"]
+[ext_resource type="PackedScene" uid="uid://dmobilecontrols01" path="res://MobileControls.tscn" id="4_mobile_controls"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -19,7 +20,10 @@ position = Vector2(360, 1100)
 
 [node name="UI" type="CanvasLayer" parent="."]
 
+[node name="MobileControls" parent="UI" instance=ExtResource("4_mobile_controls")]
+
 [node name="HUD" type="Control" parent="UI"]
+mouse_filter = 2
 layout_mode = 3
 anchors_preset = 10
 anchor_right = 1.0

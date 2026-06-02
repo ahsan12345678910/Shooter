@@ -1,0 +1,113 @@
+[gd_scene load_steps=3 format=3 uid="uid://dmobilecontrols01"]
+
+[ext_resource type="Script" path="res://mobile_controls.gd" id="1_controls"]
+[ext_resource type="Script" path="res://virtual_joystick.gd" id="2_joystick"]
+
+[node name="MobileControls" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_controls")
+
+[node name="BottomBar" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -240.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="LeftControls" type="Control" parent="BottomBar"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -200.0
+offset_right = 280.0
+offset_bottom = -24.0
+grow_vertical = 0
+
+[node name="ButtonRow" type="HBoxContainer" parent="BottomBar/LeftControls"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="LeftButton" type="Button" parent="BottomBar/LeftControls/ButtonRow"]
+custom_minimum_size = Vector2(112, 112)
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "◀"
+
+[node name="RightButton" type="Button" parent="BottomBar/LeftControls/ButtonRow"]
+custom_minimum_size = Vector2(112, 112)
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "▶"
+
+[node name="VirtualJoystick" type="Control" parent="BottomBar/LeftControls"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_joystick")
+
+[node name="Base" type="Panel" parent="BottomBar/LeftControls/VirtualJoystick"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -88.0
+offset_top = -88.0
+offset_right = 88.0
+offset_bottom = 88.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Knob" type="Panel" parent="BottomBar/LeftControls/VirtualJoystick/Base"]
+layout_mode = 0
+offset_left = 56.0
+offset_top = 56.0
+offset_right = 120.0
+offset_bottom = 120.0
+
+[node name="ShootButton" type="Button" parent="BottomBar"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -80.0
+offset_top = -128.0
+offset_right = 80.0
+offset_bottom = -32.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 28
+text = "SHOOT"
+
+[node name="JoystickToggle" type="CheckButton" parent="BottomBar"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 8.0
+offset_right = 200.0
+offset_bottom = 48.0
+theme_override_font_sizes/font_size = 22
+text = "Joystick"
