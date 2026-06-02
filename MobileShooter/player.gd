@@ -22,6 +22,8 @@ func _process(delta: float) -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	if GameManager.is_game_over:
+		return
 	var direction := _touch_direction if _pointer_active else _get_keyboard_direction()
 	velocity.x = direction * speed
 	velocity.y = 0.0
@@ -30,6 +32,8 @@ func _physics_process(_delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if GameManager.is_game_over:
+		return
 	if event is InputEventScreenTouch:
 		_handle_screen_touch(event as InputEventScreenTouch)
 	elif event is InputEventScreenDrag:
@@ -91,7 +95,7 @@ func _try_shoot_on_tap(release_pos: Vector2) -> void:
 
 
 func _try_shoot() -> void:
-	if _shoot_cooldown_left > 0.0:
+	if GameManager.is_game_over or _shoot_cooldown_left > 0.0:
 		return
 
 	var bullet := BulletScene.instantiate()

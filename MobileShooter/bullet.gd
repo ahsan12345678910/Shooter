@@ -9,6 +9,8 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if GameManager.is_game_over:
+		return
 	position.y -= speed * delta
 	if _is_off_screen():
 		queue_free()

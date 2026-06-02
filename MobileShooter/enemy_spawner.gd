@@ -10,6 +10,9 @@ var _timer: float = 0.0
 
 
 func _process(delta: float) -> void:
+	if GameManager.is_game_over:
+		return
+
 	_timer += delta
 	if _timer < spawn_interval:
 		return
