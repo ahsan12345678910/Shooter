@@ -12,11 +12,6 @@ config_version=5
 
 compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
-[autoload]
-
-GameManager="*res://game_manager.gd"
-AudioManager="*res://audio_manager.gd"
-
 [application]
 
 config/name="MobileShooter"
@@ -24,6 +19,11 @@ run/main_scene="res://Main.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 run/max_fps=60
 config/icon="res://icon.svg"
+
+[autoload]
+
+GameManager="*res://game_manager.gd"
+AudioManager="*res://audio_manager.gd"
 
 [display]
 
