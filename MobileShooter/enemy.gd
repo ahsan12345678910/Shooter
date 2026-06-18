@@ -1,6 +1,7 @@
 extends Area2D
 
 const PowerupScene: PackedScene = preload("res://Powerup.tscn")
+const ExplosionScript = preload("res://explosion.gd")
 
 @export var base_speed: float = 120.0
 @export var margin: float = 32.0
@@ -11,6 +12,8 @@ var speed: float = 120.0
 var hp: int = 1
 var max_hp: int = 1
 var is_boss: bool = false
+var _move_time: float = 0.0
+var _drift_phase: float = 0.0
 
 static var _powerup_types: Array = [
 	Powerup.Type.EXTRA_LIFE,
@@ -18,12 +21,16 @@ static var _powerup_types: Array = [
 	Powerup.Type.DOUBLE_SHOOT,
 ]
 
-@onready var _sprite: Sprite2D = $Sprite2D
 @onready var _hp_label: Label = $HPLabel
+
+@export var body_color: Color = Color(0.95, 0.32, 0.38, 1.0)
+@export var body_size: Vector2 = Vector2(48.0, 48.0)
 
 
 func _ready() -> void:
-	SpriteUtils.apply_solid_sprite(_sprite, Color(0.95, 0.32, 0.38))
+	_drift_phase = randf() * TAU
+	z_index = 1
+	_apply_visual_style()
 	add_to_group("enemies")
 	area_entered.connect(_on_area_entered)
 	GameManager.difficulty_changed.connect(_on_difficulty_changed)
@@ -40,15 +47,17 @@ func setup(config: Dictionary = {}) -> void:
 	powerup_drop_chance = config.get("powerup_drop_chance", powerup_drop_chance)
 
 	if is_boss:
-		_sprite.scale = Vector2(1.6, 1.6)
-		_sprite.modulate = Color(1.0, 0.45, 0.45)
+		body_size = Vector2(72.0, 72.0)
+		body_color = Color(1.0, 0.45, 0.45, 1.0)
 		if is_node_ready():
+			_apply_visual_style()
 			_update_hp_display()
 	else:
-		_sprite.scale = Vector2.ONE
-		_sprite.modulate = Color.WHITE
+		body_size = Vector2(48.0, 48.0)
+		body_color = Color(0.95, 0.32, 0.38, 1.0)
 
 	if is_node_ready():
+		_apply_visual_style()
 		_apply_speed()
 		_update_hp_display()
 
@@ -57,7 +66,10 @@ func _physics_process(delta: float) -> void:
 	if GameManager.is_game_over or GameManager.is_paused:
 		return
 
+	_move_time += delta
+	position.x += sin(_move_time * 2.0 + _drift_phase) * 18.0 * delta
 	position.y += speed * delta
+	queue_redraw()
 	var rect_size := get_viewport().get_visible_rect().size
 
 	if global_position.y >= rect_size.y + margin:
@@ -65,7 +77,7 @@ func _physics_process(delta: float) -> void:
 		queue_free()
 		return
 
-	if global_position.y < -margin or global_position.x < -margin or global_position.x > rect_size.x + margin:
+	if global_position.x < -margin or global_position.x > rect_size.x + margin:
 		queue_free()
 
 
@@ -97,10 +109,12 @@ func _apply_speed() -> void:
 
 
 func _flash_hit() -> void:
-	_sprite.modulate = Color(1.5, 1.5, 1.5) if not is_boss else Color(1.2, 0.6, 0.6)
+	var flash_color := Color(1.0, 0.95, 0.7) if not is_boss else Color(1.0, 0.75, 0.75)
+	body_color = flash_color
+	queue_redraw()
 	await get_tree().create_timer(0.06).timeout
 	if is_instance_valid(self):
-		_sprite.modulate = Color(1.0, 0.45, 0.45) if is_boss else Color.WHITE
+		_apply_visual_style()
 
 
 func _update_hp_display() -> void:
@@ -114,7 +128,7 @@ func _update_hp_display() -> void:
 func _spawn_explosion(world_position: Vector2) -> void:
 	var effects_parent := get_tree().current_scene.get_node_or_null("Effects")
 	if effects_parent:
-		Explosion.spawn(effects_parent, world_position)
+		ExplosionScript.spawn(effects_parent, world_position)
 
 
 func _try_drop_powerup(at_position: Vector2) -> void:
@@ -129,3 +143,26 @@ func _try_drop_powerup(at_position: Vector2) -> void:
 	powerups_parent.add_child(powerup)
 	powerup.global_position = at_position
 	powerup.setup(_powerup_types.pick_random())
+
+
+func _apply_visual_style() -> void:
+	if is_boss:
+		body_color = Color(1.0, 0.45, 0.45, 1.0)
+		body_size = Vector2(72.0, 72.0)
+	else:
+		body_color = Color(0.95, 0.32, 0.38, 1.0)
+		body_size = Vector2(48.0, 48.0)
+	queue_redraw()
+
+
+func _draw() -> void:
+	var half := body_size * 0.5
+	var points := PackedVector2Array([
+		Vector2(0.0, -half.y),
+		Vector2(half.x, -half.y * 0.25),
+		Vector2(half.x * 0.75, half.y),
+		Vector2(-half.x * 0.75, half.y),
+		Vector2(-half.x, -half.y * 0.25),
+	])
+	draw_colored_polygon(points, body_color)
+	draw_polyline(points + PackedVector2Array([points[0]]), Color(1.0, 1.0, 1.0, 0.35), 2.0)

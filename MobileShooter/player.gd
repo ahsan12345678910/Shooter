@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 const BulletScene: PackedScene = preload("res://Bullet.tscn")
+const SpriteUtils = preload("res://sprite_utils.gd")
 
 @export var speed: float = 500.0
 @export var margin: float = 32.0
@@ -23,12 +24,12 @@ var _double_shoot_time: float = 0.0
 
 
 func _ready() -> void:
-	SpriteUtils.apply_solid_sprite(_sprite, Color(0.35, 0.85, 1.0))
 	add_to_group("player")
 	await get_tree().process_frame
 	_mobile_controls = get_tree().get_first_node_in_group("mobile_controls")
 	if _mobile_controls and _mobile_controls.has_signal("shoot_requested"):
 		_mobile_controls.shoot_requested.connect(shoot)
+	SpriteUtils.apply_solid_sprite(_sprite, Color(0.35, 0.85, 1.0))
 
 
 func _process(delta: float) -> void:

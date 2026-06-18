@@ -10,10 +10,11 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
+mouse_filter = 1
 script = ExtResource("1_controls")
 
 [node name="BottomBar" type="Control" parent="."]
+mouse_filter = 0
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -88,6 +89,7 @@ offset_right = 120.0
 offset_bottom = 120.0
 
 [node name="ShootButton" type="Button" parent="BottomBar"]
+mouse_filter = 0
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5

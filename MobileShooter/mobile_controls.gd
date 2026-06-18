@@ -19,7 +19,7 @@ var _right_held: bool = false
 
 func _ready() -> void:
 	add_to_group("mobile_controls")
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	mouse_filter = Control.MOUSE_FILTER_PASS
 
 	_left_button.focus_mode = Control.FOCUS_NONE
 	_right_button.focus_mode = Control.FOCUS_NONE

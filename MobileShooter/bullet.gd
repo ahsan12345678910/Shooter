@@ -1,5 +1,7 @@
 extends Area2D
 
+const SpriteUtils = preload("res://sprite_utils.gd")
+
 @export var speed: float = 800.0
 @export var margin: float = 32.0
 

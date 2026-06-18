@@ -1,5 +1,7 @@
 extends Node2D
 
+const SpriteUtils = preload("res://sprite_utils.gd")
+
 @onready var _particles: CPUParticles2D = $CPUParticles2D
 @onready var _flash: Sprite2D = $Flash
 

@@ -1,6 +1,8 @@
 class_name Powerup
 extends Area2D
 
+const SpriteUtils = preload("res://sprite_utils.gd")
+
 enum Type { EXTRA_LIFE, FASTER_BULLETS, DOUBLE_SHOOT }
 
 const TYPE_COLORS: Dictionary = {

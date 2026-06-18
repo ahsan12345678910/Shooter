@@ -5,7 +5,7 @@ const BossScene: PackedScene = preload("res://Boss.tscn")
 
 @export var base_spawn_interval: float = 2.0
 @export var spawn_margin_x: float = 48.0
-@export var spawn_y: float = -48.0
+@export var spawn_y: float = -40.0
 
 var _timer: float = 0.0
 
