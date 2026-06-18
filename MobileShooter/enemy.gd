@@ -23,6 +23,7 @@ static var _powerup_types: Array = [
 
 
 func _ready() -> void:
+	SpriteUtils.apply_solid_sprite(_sprite, Color(0.95, 0.32, 0.38))
 	add_to_group("enemies")
 	area_entered.connect(_on_area_entered)
 	GameManager.difficulty_changed.connect(_on_difficulty_changed)

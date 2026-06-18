@@ -12,6 +12,7 @@ var _timer: float = 0.0
 
 func _ready() -> void:
 	GameManager.boss_spawn_requested.connect(_spawn_boss)
+	call_deferred("_spawn_enemy")
 
 
 func _process(delta: float) -> void:

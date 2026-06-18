@@ -19,8 +19,11 @@ var _double_shoot_active: bool = false
 var _faster_bullets_time: float = 0.0
 var _double_shoot_time: float = 0.0
 
+@onready var _sprite: Sprite2D = $Sprite2D
+
 
 func _ready() -> void:
+	SpriteUtils.apply_solid_sprite(_sprite, Color(0.35, 0.85, 1.0))
 	add_to_group("player")
 	await get_tree().process_frame
 	_mobile_controls = get_tree().get_first_node_in_group("mobile_controls")

@@ -47,6 +47,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _apply_visuals() -> void:
+	SpriteUtils.apply_solid_sprite(_sprite, Color.WHITE)
 	_sprite.modulate = TYPE_COLORS.get(powerup_type, Color.WHITE)
 	_label.text = TYPE_LABELS.get(powerup_type, "?")
 

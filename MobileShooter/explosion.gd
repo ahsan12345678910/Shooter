@@ -5,6 +5,7 @@ extends Node2D
 
 
 func _ready() -> void:
+	SpriteUtils.apply_solid_sprite(_flash, Color(1.0, 0.75, 0.35))
 	_particles.emitting = true
 	_flash.scale = Vector2(0.4, 0.4)
 	_flash.modulate.a = 1.0
