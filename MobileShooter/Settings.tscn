@@ -1,0 +1,83 @@
+[gd_scene load_steps=3 format=3 uid="uid://settings01scene"]
+
+[ext_resource type="Script" path="res://settings.gd" id="1_script"]
+[ext_resource type="Script" path="res://stars_background.gd" id="2_stars"]
+
+[node name="Settings" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="StarsBackground" type="Node2D" parent="."]
+z_index = -10
+script = ExtResource("2_stars")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="VBox" type="VBoxContainer" parent="UI"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -220.0
+offset_right = 160.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="UI/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "SETTINGS"
+horizontal_alignment = 1
+
+[node name="MusicRow" type="HBoxContainer" parent="UI/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/VBox/MusicRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+text = "Music"
+
+[node name="MusicSlider" type="HSlider" parent="UI/VBox/MusicRow"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+max_value = 1.0
+step = 0.01
+value = 0.8
+
+[node name="SFXRow" type="HBoxContainer" parent="UI/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/VBox/SFXRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+text = "SFX"
+
+[node name="SFXSlider" type="HSlider" parent="UI/VBox/SFXRow"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="HapticsCheck" type="CheckButton" parent="UI/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Haptic feedback"
+button_pressed = true
+
+[node name="JoystickCheck" type="CheckButton" parent="UI/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Use joystick"
+
+[node name="BackButton" type="Button" parent="UI/VBox"]
+custom_minimum_size = Vector2(240, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "BACK"

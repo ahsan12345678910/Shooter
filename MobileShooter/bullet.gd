@@ -11,6 +11,9 @@ func _ready() -> void:
 	if is_enemy_bullet:
 		sprite.texture = SpriteUtils.load_texture(SpriteUtils.ENEMY_BULLET_TEXTURE)
 		sprite.flip_v = true
+		collision_layer = 8
+		collision_mask = 1
+		body_entered.connect(_on_body_entered)
 	add_to_group("bullets")
 
 
@@ -22,6 +25,12 @@ func _physics_process(delta: float) -> void:
 	else:
 		position.y -= speed * delta
 	if _is_off_screen():
+		queue_free()
+
+
+func _on_body_entered(body: Node2D) -> void:
+	if body.is_in_group("player"):
+		GameManager.lose_life()
 		queue_free()
 
 

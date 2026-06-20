@@ -2,6 +2,8 @@ extends Control
 
 signal shoot_requested
 
+const SETTINGS_PATH = "user://settings.cfg"
+
 @export var use_joystick: bool = false
 
 var movement_direction: float = 0.0
@@ -36,6 +38,9 @@ func _ready() -> void:
 
 	GameManager.game_over.connect(_on_game_over)
 
+	var cfg := ConfigFile.new()
+	if cfg.load(SETTINGS_PATH) == OK:
+		use_joystick = bool(cfg.get_value("prefs", "joystick", false))
 	_joystick_toggle.button_pressed = use_joystick
 	_apply_control_mode()
 	_update_button_direction()
@@ -69,6 +74,10 @@ func _apply_control_mode() -> void:
 func _on_joystick_toggled(enabled: bool) -> void:
 	use_joystick = enabled
 	_apply_control_mode()
+	var cfg := ConfigFile.new()
+	cfg.load(SETTINGS_PATH)
+	cfg.set_value("prefs", "joystick", enabled)
+	cfg.save(SETTINGS_PATH)
 
 
 func _on_left_down() -> void:

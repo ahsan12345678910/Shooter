@@ -3,12 +3,16 @@ extends Area2D
 enum EnemyType { SCOUT, DESTROYER, BOSS }
 
 const PowerupScene: PackedScene = preload("res://Powerup.tscn")
+const EnemyBulletScene: PackedScene = preload("res://Bullet.tscn")
 
 @export var enemy_type: EnemyType = EnemyType.SCOUT
 @export var base_speed: float = 120.0
 @export var margin: float = 32.0
 @export var powerup_drop_chance: float = 0.25
 @export var score_value: int = 1
+@export var can_shoot: bool = false
+@export var shoot_interval: float = 2.2
+@export var bullet_speed: float = 320.0
 
 var speed: float = 120.0
 var hp: int = 1
@@ -16,6 +20,7 @@ var max_hp: int = 1
 var is_boss: bool = false
 var _move_time: float = 0.0
 var _drift_phase: float = 0.0
+var _shoot_timer: float = 0.0
 
 static var _powerup_types: Array = [
 	Powerup.Type.EXTRA_LIFE,
@@ -33,9 +38,9 @@ func _ready() -> void:
 	_setup_collision()
 	add_to_group("enemies")
 	area_entered.connect(_on_area_entered)
-	GameManager.difficulty_changed.connect(_on_difficulty_changed)
 	_apply_speed()
 	_update_hp_display()
+	_shoot_timer = shoot_interval * randf_range(0.4, 1.0)
 
 
 func setup(config: Dictionary = {}) -> void:
@@ -81,6 +86,7 @@ func _setup_collision() -> void:
 
 
 func flash_damage() -> void:
+	AudioManager.play_enemy_hit()
 	sprite.modulate = Color(1, 0.3, 0.3, 1)
 	await get_tree().create_timer(0.08).timeout
 	sprite.modulate = Color(1, 1, 1, 1)
@@ -89,6 +95,12 @@ func flash_damage() -> void:
 func _physics_process(delta: float) -> void:
 	if GameManager.is_game_over or GameManager.is_paused:
 		return
+
+	if can_shoot:
+		_shoot_timer -= delta
+		if _shoot_timer <= 0.0:
+			_shoot_timer = shoot_interval
+			_fire_bullet()
 
 	_move_time += delta
 	position.x += sin(_move_time * 2.0 + _drift_phase) * 18.0 * delta
@@ -104,8 +116,24 @@ func _physics_process(delta: float) -> void:
 		queue_free()
 
 
+func _fire_bullet() -> void:
+	if GameManager.is_game_over or GameManager.is_paused:
+		return
+	var bullets_parent := get_tree().current_scene.get_node_or_null("Bullets")
+	if bullets_parent == null:
+		return
+	var b: Area2D = EnemyBulletScene.instantiate()
+	b.is_enemy_bullet = true
+	b.speed = bullet_speed * GameManager.enemy_speed_multiplier
+	bullets_parent.add_child(b)
+	b.global_position = global_position + Vector2(0, 36)
+	AudioManager.play_shoot()
+
+
 func _on_area_entered(area: Area2D) -> void:
 	if GameManager.is_game_over or not area.is_in_group("bullets"):
+		return
+	if area.get("is_enemy_bullet"):
 		return
 
 	area.queue_free()
@@ -117,12 +145,12 @@ func _on_area_entered(area: Area2D) -> void:
 		return
 
 	GameManager.add_score(score_value)
+	if is_boss:
+		AudioManager.play_level_up()
+		GameManager.award_boss_kill_coins(GameManager.current_level)
+	GameManager.on_enemy_killed()
 	_try_drop_powerup(global_position)
 	_die()
-
-
-func _on_difficulty_changed(_multiplier: float) -> void:
-	_apply_speed()
 
 
 func _apply_speed() -> void:
@@ -152,6 +180,7 @@ func _try_drop_powerup(at_position: Vector2) -> void:
 
 
 func _die() -> void:
+	AudioManager.play_explosion()
 	sprite.visible = false
 	var explosion = preload("res://Explosion.tscn").instantiate()
 	get_parent().add_child(explosion)

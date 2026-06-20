@@ -1,154 +1,140 @@
 extends Node
 
-var _music_player: AudioStreamPlayer
-var _pickup_player: AudioStreamPlayer
-var _shoot_player: AudioStreamPlayer
-var _hit_player: AudioStreamPlayer
+const MUSIC_PATH = "res://background_music.wav"
+const SFX_SHOOT = "res://sfx_shoot.wav"
+const SFX_ENEMY_HIT = "res://sfx_enemy_hit.wav"
+const SFX_EXPLOSION = "res://sfx_explosion.wav"
+const SFX_PLAYER_HIT = "res://sfx_player_hit.wav"
+const SFX_POWERUP = "res://sfx_powerup.wav"
+const SFX_BOSS_APPEAR = "res://sfx_boss_appear.wav"
+const SFX_GAME_OVER = "res://sfx_game_over.wav"
+const SFX_LEVEL_UP = "res://sfx_level_up.wav"
+
+const MUSIC_VOL_KEY = "music_volume"
+const SFX_VOL_KEY = "sfx_volume"
+const SETTINGS_PATH = "user://settings.cfg"
+
+var music_volume_db: float = -6.0
+var sfx_volume_db: float = 0.0
+
+var _music: AudioStreamPlayer
+var _sfx_pool: Array[AudioStreamPlayer] = []
+var _pool_idx: int = 0
+const POOL_SIZE = 6
 
 
 func _ready() -> void:
-	_music_player = _make_player("Music")
-	_pickup_player = _make_player("Pickup")
-	_shoot_player = _make_player("Shoot")
-	_hit_player = _make_player("Hit")
-
-	_pickup_player.stream = _create_powerup_collect_sound()
-	_shoot_player.stream = _create_shoot_sound()
-	_hit_player.stream = _create_player_hit_sound()
-	_music_player.stream = _create_music_loop()
-	_music_player.volume_db = -10.0
-	_shoot_player.volume_db = -8.0
-	_hit_player.volume_db = -4.0
-	_pickup_player.volume_db = -6.0
+	_load_settings()
+	_music = _make_player("Music", music_volume_db)
+	_music.stream = _load_stream(MUSIC_PATH)
+	if _music.stream and _music.stream is AudioStreamWAV:
+		(_music.stream as AudioStreamWAV).loop_mode = AudioStreamWAV.LOOP_FORWARD
+	for i in POOL_SIZE:
+		var p := _make_player("SFX_%d" % i, sfx_volume_db)
+		_sfx_pool.append(p)
 
 
 func play_music() -> void:
-	if _music_player.playing:
-		return
-	_music_player.play()
+	if not _music.playing:
+		_music.play()
 
 
 func stop_music() -> void:
-	_music_player.stop()
+	_music.stop()
 
 
 func set_music_paused(paused: bool) -> void:
-	_music_player.stream_paused = paused
-
-
-func play_powerup_collect() -> void:
-	_pickup_player.stop()
-	_pickup_player.play()
+	_music.stream_paused = paused
 
 
 func play_shoot() -> void:
-	_shoot_player.stop()
-	_shoot_player.play()
+	_play_sfx(SFX_SHOOT)
 
 
 func play_player_hit() -> void:
-	_hit_player.stop()
-	_hit_player.play()
+	_play_sfx(SFX_PLAYER_HIT)
 
 
-func _make_player(name: String) -> AudioStreamPlayer:
-	var player := AudioStreamPlayer.new()
-	player.name = name
-	add_child(player)
-	return player
+func play_powerup_collect() -> void:
+	_play_sfx(SFX_POWERUP)
 
 
-func _create_tone_stream(
-	duration: float,
-	freq_start: float,
-	freq_end: float,
-	volume: float,
-	mix_rate: int = 22050
-) -> AudioStreamWAV:
-	var wav := AudioStreamWAV.new()
-	wav.format = AudioStreamWAV.FORMAT_16_BITS
-	wav.mix_rate = mix_rate
-	wav.stereo = false
-
-	var sample_count := int(mix_rate * duration)
-	var data := PackedByteArray()
-	data.resize(sample_count * 2)
-
-	for i in sample_count:
-		var t := float(i) / float(mix_rate)
-		var blend := t / duration if duration > 0.0 else 1.0
-		var freq := lerpf(freq_start, freq_end, blend)
-		var envelope := 1.0 - blend
-		var sample := sin(TAU * freq * t) * envelope * volume
-		var sample_16 := int(clampf(sample * 32767.0, -32768.0, 32767.0))
-		data[i * 2] = sample_16 & 0xFF
-		data[i * 2 + 1] = (sample_16 >> 8) & 0xFF
-
-	wav.data = data
-	return wav
+func play_enemy_hit() -> void:
+	_play_sfx(SFX_ENEMY_HIT)
 
 
-func _create_powerup_collect_sound() -> AudioStreamWAV:
-	return _create_tone_stream(0.14, 660.0, 1180.0, 0.45)
+func play_explosion() -> void:
+	_play_sfx(SFX_EXPLOSION)
 
 
-func _create_shoot_sound() -> AudioStreamWAV:
-	return _create_tone_stream(0.07, 920.0, 420.0, 0.32)
+func play_boss_appear() -> void:
+	_play_sfx(SFX_BOSS_APPEAR)
 
 
-func _create_player_hit_sound() -> AudioStreamWAV:
-	var wav := AudioStreamWAV.new()
-	wav.format = AudioStreamWAV.FORMAT_16_BITS
-	wav.mix_rate = 22050
-	wav.stereo = false
-
-	var mix_rate := 22050.0
-	var duration := 0.28
-	var sample_count := int(mix_rate * duration)
-	var data := PackedByteArray()
-	data.resize(sample_count * 2)
-
-	for i in sample_count:
-		var t := float(i) / mix_rate
-		var envelope := 1.0 - (t / duration)
-		var noise := randf_range(-1.0, 1.0)
-		var tone := sin(TAU * 110.0 * t) * 0.55
-		var sample := (noise * 0.35 + tone) * envelope * 0.5
-		var sample_16 := int(clampf(sample * 32767.0, -32768.0, 32767.0))
-		data[i * 2] = sample_16 & 0xFF
-		data[i * 2 + 1] = (sample_16 >> 8) & 0xFF
-
-	wav.data = data
-	return wav
+func play_game_over() -> void:
+	_play_sfx(SFX_GAME_OVER)
 
 
-func _create_music_loop() -> AudioStreamWAV:
-	var wav := AudioStreamWAV.new()
-	wav.format = AudioStreamWAV.FORMAT_16_BITS
-	wav.mix_rate = 22050
-	wav.stereo = false
-	wav.loop_mode = AudioStreamWAV.LOOP_FORWARD
+func play_level_up() -> void:
+	_play_sfx(SFX_LEVEL_UP)
 
-	var mix_rate := 22050.0
-	var duration := 4.0
-	var sample_count := int(mix_rate * duration)
-	var data := PackedByteArray()
-	data.resize(sample_count * 2)
 
-	var notes: PackedFloat32Array = PackedFloat32Array([0.0, 3.0, 5.0, 7.0, 5.0, 3.0, 0.0, -2.0])
-	var base_freq := 130.0
+func set_music_volume(linear: float) -> void:
+	music_volume_db = linear_to_db(clampf(linear, 0.001, 1.0))
+	_music.volume_db = music_volume_db
+	_save_settings()
 
-	for i in sample_count:
-		var t := float(i) / mix_rate
-		var beat := int(t * 2.0) % notes.size()
-		var note := notes[beat]
-		var freq := base_freq * pow(2.0, note / 12.0)
-		var sample := sin(TAU * freq * t) * 0.12
-		sample += sin(TAU * freq * 2.0 * t) * 0.04
-		sample += sin(TAU * 55.0 * t) * 0.06
-		var sample_16 := int(clampf(sample * 32767.0, -32768.0, 32767.0))
-		data[i * 2] = sample_16 & 0xFF
-		data[i * 2 + 1] = (sample_16 >> 8) & 0xFF
 
-	wav.data = data
-	return wav
+func set_sfx_volume(linear: float) -> void:
+	sfx_volume_db = linear_to_db(clampf(linear, 0.001, 1.0))
+	for p in _sfx_pool:
+		p.volume_db = sfx_volume_db
+	_save_settings()
+
+
+func get_music_linear() -> float:
+	return db_to_linear(music_volume_db)
+
+
+func get_sfx_linear() -> float:
+	return db_to_linear(sfx_volume_db)
+
+
+func _play_sfx(path: String) -> void:
+	var p := _sfx_pool[_pool_idx % POOL_SIZE]
+	_pool_idx += 1
+	var stream := _load_stream(path)
+	if stream:
+		p.stream = stream
+		p.play()
+
+
+func _make_player(n: String, vol: float) -> AudioStreamPlayer:
+	var p := AudioStreamPlayer.new()
+	p.name = n
+	p.volume_db = vol
+	add_child(p)
+	return p
+
+
+func _load_stream(path: String) -> AudioStream:
+	if ResourceLoader.exists(path):
+		return load(path) as AudioStream
+	push_warning("AudioManager: missing file " + path)
+	return null
+
+
+func _load_settings() -> void:
+	var cfg := ConfigFile.new()
+	if cfg.load(SETTINGS_PATH) != OK:
+		return
+	music_volume_db = float(cfg.get_value("audio", MUSIC_VOL_KEY, -6.0))
+	sfx_volume_db = float(cfg.get_value("audio", SFX_VOL_KEY, 0.0))
+
+
+func _save_settings() -> void:
+	var cfg := ConfigFile.new()
+	cfg.load(SETTINGS_PATH)
+	cfg.set_value("audio", MUSIC_VOL_KEY, music_volume_db)
+	cfg.set_value("audio", SFX_VOL_KEY, sfx_volume_db)
+	cfg.save(SETTINGS_PATH)

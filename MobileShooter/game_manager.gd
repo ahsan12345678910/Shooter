@@ -2,69 +2,118 @@ extends Node
 
 const MAX_LIVES: int = 3
 const HIGH_SCORE_PATH: String = "user://highscore.cfg"
-const SPEED_INTERVAL_SEC: float = 30.0
-const SPEED_INCREASE_PER_TIER: float = 0.12
-const BOSS_SCORE_INTERVAL: int = 100
+const COINS_PATH: String = "user://coins.cfg"
+const RATE_PROMPT_SCORE: int = 50
+const RATE_PROMPT_KEY: String = "rate_prompted"
 
 var score: int = 0
 var lives: int = MAX_LIVES
 var high_score: int = 0
 var is_game_over: bool = false
 var is_paused: bool = false
-var elapsed_time: float = 0.0
 var enemy_speed_multiplier: float = 1.0
 
-var _next_boss_score: int = BOSS_SCORE_INTERVAL
-var _speed_tier: int = 0
+var current_level: int = 1
+var enemies_killed_this_level: int = 0
+var enemies_required_this_level: int = 0
+var level_active: bool = false
+
+var coins: int = 0
+var total_coins_earned: int = 0
+
+var _rate_prompted: bool = false
 
 signal score_changed(new_score: int)
 signal lives_changed(new_lives: int)
 signal high_score_changed(new_high_score: int)
 signal game_over
 signal paused_changed(is_paused: bool)
-signal boss_spawn_requested(milestone: int)
-signal difficulty_changed(speed_multiplier: float)
+signal level_started(level_number: int)
+signal level_completed(level_number: int, coins_reward: int)
+signal level_progress_changed(killed: int, required: int)
+signal game_completed
+signal coins_changed(new_coins: int)
+signal rate_prompt_requested
 
 
 func _ready() -> void:
 	_load_high_score()
-
-
-func _process(delta: float) -> void:
-	if is_game_over or is_paused:
-		return
-
-	elapsed_time += delta
-	var new_tier := int(elapsed_time / SPEED_INTERVAL_SEC)
-	if new_tier != _speed_tier:
-		_speed_tier = new_tier
-		enemy_speed_multiplier = 1.0 + float(_speed_tier) * SPEED_INCREASE_PER_TIER
-		difficulty_changed.emit(enemy_speed_multiplier)
+	_load_coins()
+	var cfg := ConfigFile.new()
+	if cfg.load(HIGH_SCORE_PATH) == OK:
+		_rate_prompted = bool(cfg.get_value("game", RATE_PROMPT_KEY, false))
 
 
 func reset_game() -> void:
 	score = 0
-	lives = MAX_LIVES
+	lives = MAX_LIVES + (1 if UpgradeManager.extra_life else 0)
 	is_game_over = false
 	is_paused = false
-	elapsed_time = 0.0
 	enemy_speed_multiplier = 1.0
-	_speed_tier = 0
-	_next_boss_score = BOSS_SCORE_INTERVAL
+	current_level = 1
+	enemies_killed_this_level = 0
+	enemies_required_this_level = 0
+	level_active = false
 	get_tree().paused = false
 	score_changed.emit(score)
 	lives_changed.emit(lives)
-	difficulty_changed.emit(enemy_speed_multiplier)
+
+
+func start_level(level_number: int) -> void:
+	current_level = level_number
+	enemies_killed_this_level = 0
+	var data := LevelData.get_level(level_number)
+	enemies_required_this_level = data["enemy_count"]
+	enemy_speed_multiplier = data["enemy_speed"]
+	level_active = true
+	level_started.emit(level_number)
+	level_progress_changed.emit(enemies_killed_this_level, enemies_required_this_level)
+
+
+func on_enemy_killed() -> void:
+	if not level_active or is_game_over:
+		return
+	enemies_killed_this_level += 1
+	level_progress_changed.emit(enemies_killed_this_level, enemies_required_this_level)
+	if enemies_killed_this_level >= enemies_required_this_level:
+		_complete_level()
+
+
+func _complete_level() -> void:
+	level_active = false
+	var data := LevelData.get_level(current_level)
+	var reward: int = data["coins_reward"]
+	add_coins(reward)
+	AudioManager.play_level_up()
+	level_completed.emit(current_level, reward)
+
+
+func advance_to_next_level() -> void:
+	if current_level >= LevelData.MAX_LEVEL:
+		game_completed.emit()
+		return
+	start_level(current_level + 1)
+
+
+func get_score_per_kill() -> int:
+	return LevelData.get_level(current_level).get("score_per_kill", 1)
 
 
 func add_score(amount: int = 1) -> void:
 	if is_game_over:
 		return
-	var old_score := score
 	score += amount
 	score_changed.emit(score)
 	_try_update_high_score()
-	_check_boss_milestones(old_score, score)
+	if score % 10 == 0:
+		add_coins(1)
+	if not _rate_prompted and score >= RATE_PROMPT_SCORE:
+		_rate_prompted = true
+		var cfg := ConfigFile.new()
+		cfg.load(HIGH_SCORE_PATH)
+		cfg.set_value("game", RATE_PROMPT_KEY, true)
+		cfg.save(HIGH_SCORE_PATH)
+		rate_prompt_requested.emit()
 
 
 func add_life(amount: int = 1) -> void:
@@ -78,6 +127,8 @@ func lose_life() -> void:
 	if is_game_over:
 		return
 	var player := get_tree().get_first_node_in_group("player")
+	if player and player.has_method("absorb_hit") and player.absorb_hit():
+		return
 	if player and player.has_method("flash_damage"):
 		player.flash_damage()
 	AudioManager.play_player_hit()
@@ -104,24 +155,40 @@ func set_paused(paused: bool) -> void:
 	paused_changed.emit(paused)
 
 
-func get_spawn_count_for_score() -> int:
-	return clampi(1 + score / 20, 1, 4)
+func add_coins(amount: int) -> void:
+	coins += amount
+	total_coins_earned += amount
+	coins_changed.emit(coins)
+	_save_coins()
 
 
-func get_spawn_interval_for_score(base_interval: float) -> float:
-	var reduction := float(score) * 0.015
-	return maxf(0.45, base_interval - reduction)
+func spend_coins(amount: int) -> bool:
+	if coins < amount:
+		return false
+	coins -= amount
+	coins_changed.emit(coins)
+	_save_coins()
+	return true
 
 
-func get_boss_hp_for_milestone(milestone: int) -> int:
-	var tier: int = maxi(1, milestone / BOSS_SCORE_INTERVAL)
-	return 6 + tier * 4
+func award_boss_kill_coins(level_number: int) -> void:
+	var bonus := 10 + level_number * 2
+	add_coins(bonus)
 
 
-func _check_boss_milestones(_old_score: int, new_score: int) -> void:
-	while new_score >= _next_boss_score:
-		boss_spawn_requested.emit(_next_boss_score)
-		_next_boss_score += BOSS_SCORE_INTERVAL
+func _load_coins() -> void:
+	var cfg := ConfigFile.new()
+	if cfg.load(COINS_PATH) != OK:
+		return
+	coins = int(cfg.get_value("economy", "coins", 0))
+	total_coins_earned = int(cfg.get_value("economy", "total_earned", 0))
+
+
+func _save_coins() -> void:
+	var cfg := ConfigFile.new()
+	cfg.set_value("economy", "coins", coins)
+	cfg.set_value("economy", "total_earned", total_coins_earned)
+	cfg.save(COINS_PATH)
 
 
 func _try_update_high_score() -> void:

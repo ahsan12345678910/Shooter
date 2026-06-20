@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 const BulletScene: PackedScene = preload("res://Bullet.tscn")
+const SETTINGS_PATH = "user://settings.cfg"
 
 @export var speed: float = 500.0
 @export var margin: float = 32.0
@@ -18,12 +19,19 @@ var _bullet_speed_multiplier: float = 1.0
 var _double_shoot_active: bool = false
 var _faster_bullets_time: float = 0.0
 var _double_shoot_time: float = 0.0
+var _shield_active: bool = false
+var _shield_hits: int = 0
 
 @onready var sprite: Sprite2D = $Sprite2D
 
 
 func _ready() -> void:
 	add_to_group("player")
+	if UpgradeManager.fast_bullet:
+		base_bullet_speed *= 1.4
+	if UpgradeManager.shield_start:
+		_shield_active = true
+		_shield_hits = 1
 	await get_tree().process_frame
 	_mobile_controls = get_tree().get_first_node_in_group("mobile_controls")
 	if _mobile_controls and _mobile_controls.has_signal("shoot_requested"):
@@ -71,6 +79,22 @@ func shoot() -> void:
 func flash_damage() -> void:
 	sprite.modulate = Color(1, 0.2, 0.2, 1)
 	await get_tree().create_timer(0.1).timeout
+	sprite.modulate = Color(1, 1, 1, 1)
+
+
+func absorb_hit() -> bool:
+	if not _shield_active:
+		return false
+	_shield_hits -= 1
+	if _shield_hits <= 0:
+		_shield_active = false
+	_shield_flash()
+	return true
+
+
+func _shield_flash() -> void:
+	sprite.modulate = Color(0.5, 0.8, 1.0, 1.0)
+	await get_tree().create_timer(0.12).timeout
 	sprite.modulate = Color(1, 1, 1, 1)
 
 
@@ -140,6 +164,9 @@ func _get_keyboard_direction() -> float:
 
 func _vibrate_shoot() -> void:
 	if not (OS.has_feature("mobile") or OS.has_feature("Android") or OS.has_feature("iOS")):
+		return
+	var cfg := ConfigFile.new()
+	if cfg.load(SETTINGS_PATH) == OK and not bool(cfg.get_value("prefs", "haptics", true)):
 		return
 	Input.vibrate_handheld(shoot_vibrate_ms)
 
