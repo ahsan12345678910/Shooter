@@ -12,7 +12,7 @@ var _timer: float = 0.0
 
 func _ready() -> void:
 	GameManager.boss_spawn_requested.connect(_spawn_boss)
-	call_deferred("_spawn_enemy")
+	call_deferred("_spawn_enemy", 0)
 
 
 func _process(delta: float) -> void:
@@ -27,10 +27,17 @@ func _process(delta: float) -> void:
 
 	var spawn_count := GameManager.get_spawn_count_for_score()
 	for i in spawn_count:
-		_spawn_enemy(i, spawn_count)
+		var type := _pick_enemy_type()
+		_spawn_enemy(type, i, spawn_count)
 
 
-func _spawn_enemy(index: int = 0, total: int = 1) -> void:
+func _pick_enemy_type() -> int:
+	if GameManager.score >= 30 and randf() < 0.35:
+		return 1
+	return 0
+
+
+func _spawn_enemy(type: int, index: int = 0, total: int = 1) -> void:
 	var enemies_parent := get_parent().get_node_or_null("Enemies")
 	if enemies_parent == null:
 		return
@@ -46,6 +53,7 @@ func _spawn_enemy(index: int = 0, total: int = 1) -> void:
 	)
 
 	var enemy: Area2D = EnemyScene.instantiate()
+	enemy.enemy_type = type
 	enemies_parent.add_child(enemy)
 	enemy.position = Vector2(spawn_x, spawn_y + randf_range(-16.0, 16.0))
 

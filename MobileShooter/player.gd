@@ -1,7 +1,6 @@
 extends CharacterBody2D
 
 const BulletScene: PackedScene = preload("res://Bullet.tscn")
-const SpriteUtils = preload("res://sprite_utils.gd")
 
 @export var speed: float = 500.0
 @export var margin: float = 32.0
@@ -20,7 +19,7 @@ var _double_shoot_active: bool = false
 var _faster_bullets_time: float = 0.0
 var _double_shoot_time: float = 0.0
 
-@onready var _sprite: Sprite2D = $Sprite2D
+@onready var sprite: Sprite2D = $Sprite2D
 
 
 func _ready() -> void:
@@ -29,7 +28,7 @@ func _ready() -> void:
 	_mobile_controls = get_tree().get_first_node_in_group("mobile_controls")
 	if _mobile_controls and _mobile_controls.has_signal("shoot_requested"):
 		_mobile_controls.shoot_requested.connect(shoot)
-	SpriteUtils.apply_solid_sprite(_sprite, Color(0.35, 0.85, 1.0))
+	GameManager.game_over.connect(_on_game_over)
 
 
 func _process(delta: float) -> void:
@@ -67,6 +66,16 @@ func shoot() -> void:
 	_shoot_cooldown_left = shoot_cooldown
 	AudioManager.play_shoot()
 	_vibrate_shoot()
+
+
+func flash_damage() -> void:
+	sprite.modulate = Color(1, 0.2, 0.2, 1)
+	await get_tree().create_timer(0.1).timeout
+	sprite.modulate = Color(1, 1, 1, 1)
+
+
+func play_death() -> void:
+	sprite.modulate = Color(1, 1, 1, 0)
 
 
 func collect_powerup(type: Powerup.Type) -> void:
@@ -138,3 +147,7 @@ func _vibrate_shoot() -> void:
 func _clamp_to_screen() -> void:
 	var viewport_size := get_viewport().get_visible_rect().size
 	position.x = clampf(position.x, margin, viewport_size.x - margin)
+
+
+func _on_game_over() -> void:
+	play_death()

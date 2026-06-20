@@ -77,6 +77,9 @@ func add_life(amount: int = 1) -> void:
 func lose_life() -> void:
 	if is_game_over:
 		return
+	var player := get_tree().get_first_node_in_group("player")
+	if player and player.has_method("flash_damage"):
+		player.flash_damage()
 	AudioManager.play_player_hit()
 	lives -= 1
 	lives_changed.emit(lives)

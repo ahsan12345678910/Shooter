@@ -1,19 +1,13 @@
+# sprite_utils.gd
+class_name SpriteUtils
 extends RefCounted
 
-static func make_solid_texture(size: Vector2i, color: Color = Color.WHITE) -> ImageTexture:
-	var image := Image.create(maxi(size.x, 1), maxi(size.y, 1), false, Image.FORMAT_RGBA8)
-	image.fill(color)
-	return ImageTexture.create_from_image(image)
+const PLAYER_TEXTURE       = "res://player.png"
+const ENEMY_SCOUT_TEXTURE  = "res://enemy_scout.png"
+const ENEMY_DEST_TEXTURE   = "res://enemy_destroyer.png"
+const BOSS_TEXTURE         = "res://enemy_boss.png"
+const BULLET_TEXTURE       = "res://bullet.png"
+const ENEMY_BULLET_TEXTURE = "res://enemy_bullet.png"
 
-
-static func apply_solid_sprite(sprite: Sprite2D, color: Color = Color.WHITE, fallback_size: Vector2i = Vector2i(32, 32)) -> void:
-	if sprite == null:
-		return
-
-	var size := fallback_size
-	if sprite.texture != null:
-		var tex_size := Vector2i(sprite.texture.get_size())
-		if tex_size.x > 0 and tex_size.y > 0:
-			size = tex_size
-
-	sprite.texture = make_solid_texture(size, color)
+static func load_texture(path: String) -> Texture2D:
+	return load(path) as Texture2D

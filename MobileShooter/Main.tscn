@@ -1,45 +1,45 @@
-[gd_scene load_steps=6 format=3 uid="uid://c8main01scene2d"]
+[gd_scene format=3 uid="uid://cl08fqsu6hku0"]
 
-[ext_resource type="Script" path="res://main.gd" id="1_main"]
-[ext_resource type="Script" path="res://enemy_spawner.gd" id="2_spawner"]
-[ext_resource type="PackedScene" uid="uid://bqx8player01scene" path="res://Player.tscn" id="3_player"]
-[ext_resource type="PackedScene" uid="uid://dmobilecontrols01" path="res://MobileControls.tscn" id="4_mobile_controls"]
-[ext_resource type="Script" path="res://stars_background.gd" id="5_stars"]
+[ext_resource type="Script" uid="uid://8mc1xnovh5vh" path="res://main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://bpee52hjpky4s" path="res://enemy_spawner.gd" id="2_spawner"]
+[ext_resource type="PackedScene" uid="uid://dadipg750kmw" path="res://Player.tscn" id="3_player"]
+[ext_resource type="PackedScene" uid="uid://b2fhq2qra0m25" path="res://MobileControls.tscn" id="4_mobile_controls"]
+[ext_resource type="Script" uid="uid://cmcg7j2rifxy7" path="res://stars_background.gd" id="5_stars"]
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node2D" unique_id=292509906]
 script = ExtResource("1_main")
 
-[node name="StarsBackground" type="Node2D" parent="."]
+[node name="StarsBackground" type="Node2D" parent="." unique_id=2075356429]
 z_index = -10
 script = ExtResource("5_stars")
 
-[node name="Effects" type="Node2D" parent="."]
+[node name="Effects" type="Node2D" parent="." unique_id=1146602720]
 
-[node name="Bullets" type="Node2D" parent="."]
+[node name="Bullets" type="Node2D" parent="." unique_id=1118671881]
 
-[node name="Enemies" type="Node2D" parent="."]
+[node name="Enemies" type="Node2D" parent="." unique_id=472695181]
 
-[node name="Powerups" type="Node2D" parent="."]
+[node name="Powerups" type="Node2D" parent="." unique_id=1054358852]
 
-[node name="EnemySpawner" type="Node" parent="."]
+[node name="EnemySpawner" type="Node" parent="." unique_id=1399222337]
 script = ExtResource("2_spawner")
 
-[node name="Player" parent="." instance=ExtResource("3_player")]
+[node name="Player" parent="." unique_id=1726072116 instance=ExtResource("3_player")]
 position = Vector2(360, 1100)
 
-[node name="UI" type="CanvasLayer" parent="."]
+[node name="UI" type="CanvasLayer" parent="." unique_id=1848213904]
 
-[node name="MobileControls" parent="UI" instance=ExtResource("4_mobile_controls")]
+[node name="MobileControls" parent="UI" unique_id=270501216 instance=ExtResource("4_mobile_controls")]
 
-[node name="HUD" type="Control" parent="UI"]
-mouse_filter = 2
+[node name="HUD" type="Control" parent="UI" unique_id=1045778607]
 layout_mode = 3
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 96.0
 grow_horizontal = 2
+mouse_filter = 2
 
-[node name="ScoreLabel" type="Label" parent="UI/HUD"]
+[node name="ScoreLabel" type="Label" parent="UI/HUD" unique_id=927709732]
 layout_mode = 0
 offset_left = 16.0
 offset_top = 8.0
@@ -48,17 +48,17 @@ offset_bottom = 44.0
 theme_override_font_sizes/font_size = 28
 text = "Score: 0"
 
-[node name="HighScoreLabel" type="Label" parent="UI/HUD"]
+[node name="HighScoreLabel" type="Label" parent="UI/HUD" unique_id=21406211]
 layout_mode = 0
 offset_left = 16.0
 offset_top = 44.0
 offset_right = 280.0
 offset_bottom = 76.0
-theme_override_font_sizes/font_size = 20
 theme_override_colors/font_color = Color(0.75, 0.85, 1, 1)
+theme_override_font_sizes/font_size = 20
 text = "Best: 0"
 
-[node name="LivesLabel" type="Label" parent="UI/HUD"]
+[node name="LivesLabel" type="Label" parent="UI/HUD" unique_id=1212692312]
 layout_mode = 0
 offset_left = 440.0
 offset_top = 16.0
@@ -68,7 +68,7 @@ theme_override_font_sizes/font_size = 28
 text = "Lives: 3"
 horizontal_alignment = 2
 
-[node name="PauseButton" type="Button" parent="UI/HUD"]
+[node name="PauseButton" type="Button" parent="UI/HUD" unique_id=1498451522]
 process_mode = 3
 layout_mode = 0
 offset_left = 300.0
@@ -78,7 +78,7 @@ offset_bottom = 68.0
 theme_override_font_sizes/font_size = 22
 text = "Pause"
 
-[node name="PausePanel" type="Control" parent="UI"]
+[node name="PausePanel" type="Control" parent="UI" unique_id=1932505495]
 process_mode = 3
 visible = false
 layout_mode = 3
@@ -88,7 +88,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Overlay" type="ColorRect" parent="UI/PausePanel"]
+[node name="Overlay" type="ColorRect" parent="UI/PausePanel" unique_id=73989650]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -97,7 +97,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.55)
 
-[node name="CenterContainer" type="CenterContainer" parent="UI/PausePanel"]
+[node name="CenterContainer" type="CenterContainer" parent="UI/PausePanel" unique_id=900496334]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -105,23 +105,23 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/PausePanel/CenterContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/PausePanel/CenterContainer" unique_id=921757395]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="PausedLabel" type="Label" parent="UI/PausePanel/CenterContainer/VBoxContainer"]
+[node name="PausedLabel" type="Label" parent="UI/PausePanel/CenterContainer/VBoxContainer" unique_id=1651451918]
 layout_mode = 2
 theme_override_font_sizes/font_size = 44
 text = "Paused"
 horizontal_alignment = 1
 
-[node name="ResumeButton" type="Button" parent="UI/PausePanel/CenterContainer/VBoxContainer"]
+[node name="ResumeButton" type="Button" parent="UI/PausePanel/CenterContainer/VBoxContainer" unique_id=54141159]
 custom_minimum_size = Vector2(240, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Resume"
 
-[node name="GameOverPanel" type="Control" parent="UI"]
+[node name="GameOverPanel" type="Control" parent="UI" unique_id=1039162925]
 process_mode = 3
 visible = false
 layout_mode = 3
@@ -131,7 +131,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Overlay" type="ColorRect" parent="UI/GameOverPanel"]
+[node name="Overlay" type="ColorRect" parent="UI/GameOverPanel" unique_id=573122749]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -140,7 +140,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.7)
 
-[node name="CenterContainer" type="CenterContainer" parent="UI/GameOverPanel"]
+[node name="CenterContainer" type="CenterContainer" parent="UI/GameOverPanel" unique_id=145227465]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -148,30 +148,30 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/GameOverPanel/CenterContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/GameOverPanel/CenterContainer" unique_id=1959598222]
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="GameOverLabel" type="Label" parent="UI/GameOverPanel/CenterContainer/VBoxContainer"]
+[node name="GameOverLabel" type="Label" parent="UI/GameOverPanel/CenterContainer/VBoxContainer" unique_id=1186297825]
 layout_mode = 2
 theme_override_font_sizes/font_size = 48
 text = "Game Over"
 horizontal_alignment = 1
 
-[node name="FinalScoreLabel" type="Label" parent="UI/GameOverPanel/CenterContainer/VBoxContainer"]
+[node name="FinalScoreLabel" type="Label" parent="UI/GameOverPanel/CenterContainer/VBoxContainer" unique_id=17823549]
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Final Score: 0"
 horizontal_alignment = 1
 
-[node name="FinalHighScoreLabel" type="Label" parent="UI/GameOverPanel/CenterContainer/VBoxContainer"]
+[node name="FinalHighScoreLabel" type="Label" parent="UI/GameOverPanel/CenterContainer/VBoxContainer" unique_id=461508056]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 theme_override_colors/font_color = Color(0.75, 0.85, 1, 1)
+theme_override_font_sizes/font_size = 24
 text = "Best: 0"
 horizontal_alignment = 1
 
-[node name="RestartButton" type="Button" parent="UI/GameOverPanel/CenterContainer/VBoxContainer"]
+[node name="RestartButton" type="Button" parent="UI/GameOverPanel/CenterContainer/VBoxContainer" unique_id=1107224949]
 custom_minimum_size = Vector2(240, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28

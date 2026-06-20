@@ -1,12 +1,10 @@
-[gd_scene format=3 uid="uid://cmryurfi2l4fy"]
+[gd_scene load_steps=4 format=3 uid="uid://cmryurfi2l4fy"]
 
 [ext_resource type="Script" path="res://bullet.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://bullet.png" id="2_texture"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bullet"]
-size = Vector2(8, 16)
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_bullet"]
-size = Vector2(8, 16)
+size = Vector2(6, 20)
 
 [node name="Bullet" type="Area2D"]
 collision_layer = 2
@@ -14,7 +12,7 @@ collision_mask = 4
 script = ExtResource("1_script")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = SubResource("PlaceholderTexture2D_bullet")
+texture = ExtResource("2_texture")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_bullet")
