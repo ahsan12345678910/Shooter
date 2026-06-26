@@ -109,8 +109,9 @@ func _physics_process(delta: float) -> void:
 	var rect_size := get_viewport().get_visible_rect().size
 
 	if global_position.y >= rect_size.y + margin:
+		_count_escape()
 		GameManager.lose_life()
-		_remove_without_kill()
+		queue_free()
 		return
 
 	if global_position.x < -margin or global_position.x > rect_size.x + margin:
@@ -190,9 +191,13 @@ func _die() -> void:
 	queue_free()
 
 
-func _remove_without_kill() -> void:
+func _count_escape() -> void:
 	if _is_dying:
 		return
 	_is_dying = true
 	GameManager.on_enemy_escaped()
+
+
+func _remove_without_kill() -> void:
+	_count_escape()
 	queue_free()

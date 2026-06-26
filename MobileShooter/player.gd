@@ -102,6 +102,11 @@ func play_death() -> void:
 	sprite.modulate = Color(1, 1, 1, 0)
 
 
+func revive() -> void:
+	sprite.visible = true
+	sprite.modulate = Color(1, 1, 1, 1)
+
+
 func collect_powerup(type: Powerup.Type) -> void:
 	match type:
 		Powerup.Type.EXTRA_LIFE:

@@ -18,6 +18,7 @@ var _active: bool = false
 func _ready() -> void:
 	GameManager.level_started.connect(_on_level_started)
 	GameManager.level_completed.connect(_on_level_completed)
+	GameManager.game_continued.connect(_on_game_continued)
 
 
 func _on_level_started(level_number: int) -> void:
@@ -41,6 +42,20 @@ func _on_level_completed(_level: int, _coins: int) -> void:
 	if enemies_parent:
 		for child in enemies_parent.get_children():
 			child.queue_free()
+
+
+func _on_game_continued() -> void:
+	if not GameManager.level_active:
+		return
+	_active = true
+	var remaining := GameManager.enemies_required_this_level - GameManager.enemies_killed_this_level
+	if remaining <= 0:
+		return
+	var enemies_parent := get_parent().get_node_or_null("Enemies")
+	var on_screen := enemies_parent.get_child_count() if enemies_parent else 0
+	if _enemies_to_spawn <= 0 and on_screen == 0:
+		_enemies_to_spawn = remaining
+		_timer = _spawn_interval
 
 
 func _process(delta: float) -> void:

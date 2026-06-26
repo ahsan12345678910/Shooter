@@ -32,6 +32,7 @@ signal level_started(level_number: int)
 signal level_completed(level_number: int, coins_reward: int)
 signal level_progress_changed(killed: int, required: int)
 signal game_completed
+signal game_continued
 signal coins_changed(new_coins: int)
 signal rate_prompt_requested
 
@@ -79,12 +80,36 @@ func on_enemy_escaped() -> void:
 
 
 func _register_enemy_cleared() -> void:
-	if not level_active or is_game_over:
+	if not level_active:
 		return
 	enemies_killed_this_level += 1
 	level_progress_changed.emit(enemies_killed_this_level, enemies_required_this_level)
+	if is_game_over:
+		return
 	if enemies_killed_this_level >= enemies_required_this_level:
 		_complete_level()
+
+
+func check_and_complete_level() -> void:
+	if is_game_over:
+		return
+	if enemies_killed_this_level >= enemies_required_this_level:
+		if not level_active:
+			level_active = true
+		_complete_level()
+
+
+func resume_after_continue() -> void:
+	is_game_over = false
+	is_paused = false
+	get_tree().paused = false
+	AudioManager.set_music_paused(false)
+	if not AudioManager.is_music_playing():
+		AudioManager.play_music()
+	if enemies_killed_this_level < enemies_required_this_level:
+		level_active = true
+	check_and_complete_level()
+	game_continued.emit()
 
 
 func _complete_level() -> void:
@@ -155,7 +180,7 @@ func toggle_pause() -> void:
 
 
 func set_paused(paused: bool) -> void:
-	if is_game_over:
+	if is_game_over and paused:
 		return
 	is_paused = paused
 	get_tree().paused = paused

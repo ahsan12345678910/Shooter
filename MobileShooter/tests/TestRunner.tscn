@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://testrunner01"]
+
+[ext_resource type="Script" path="res://tests/run_all_scenarios.gd" id="1_runner"]
+[ext_resource type="PackedScene" uid="uid://c8main01scene2d" path="res://Main.tscn" id="2_main"]
+
+[node name="TestRunner" type="Node"]
+script = ExtResource("1_runner")
+
+[node name="Main" parent="." instance=ExtResource("2_main")]

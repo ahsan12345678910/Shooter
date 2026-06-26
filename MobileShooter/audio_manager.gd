@@ -43,6 +43,10 @@ func stop_music() -> void:
 	_music.stop()
 
 
+func is_music_playing() -> bool:
+	return _music.playing
+
+
 func set_music_paused(paused: bool) -> void:
 	_music.stream_paused = paused
 

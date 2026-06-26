@@ -155,16 +155,15 @@ func _on_continue_pressed() -> void:
 	if GameManager.spend_coins(20):
 		_continue_used = true
 		_continue_btn.hide()
-		GameManager.lives = 1
-		GameManager.is_game_over = false
-		get_tree().paused = false
 		_game_over_panel.hide()
-		var player := get_tree().get_first_node_in_group("player")
-		if player:
-			player.sprite.visible = true
-			player.sprite.modulate = Color(1, 1, 1, 1)
+		GameManager.lives = 1
 		GameManager.lives_changed.emit(GameManager.lives)
+		var player := get_tree().get_first_node_in_group("player")
+		if player and player.has_method("revive"):
+			player.revive()
+		GameManager.resume_after_continue()
 		_pause_button.visible = true
+		_mobile_controls.mouse_filter = Control.MOUSE_FILTER_PASS
 	else:
 		_continue_btn.text = "Not enough coins!"
 		await get_tree().create_timer(1.5).timeout
