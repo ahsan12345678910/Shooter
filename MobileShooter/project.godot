@@ -15,10 +15,12 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="MobileShooter"
+config/name/localized_name="Mobile Shooter"
 run/main_scene="res://MainMenu.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 run/max_fps=60
-config/icon="res://store_assets/icons/icon_1024x1024.png"
+config/icon="res://icons/icon_1024x1024.png"
+config/version="1.0.0"
 
 [autoload]
 
@@ -33,6 +35,7 @@ IAPManager="*res://iap_manager.gd"
 window/size/viewport_width=720
 window/size/viewport_height=1280
 window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
 window/handheld/orientation=1
 
 [dotnet]

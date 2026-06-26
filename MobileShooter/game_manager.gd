@@ -71,6 +71,14 @@ func start_level(level_number: int) -> void:
 
 
 func on_enemy_killed() -> void:
+	_register_enemy_cleared()
+
+
+func on_enemy_escaped() -> void:
+	_register_enemy_cleared()
+
+
+func _register_enemy_cleared() -> void:
 	if not level_active or is_game_over:
 		return
 	enemies_killed_this_level += 1

@@ -152,6 +152,7 @@ text = "Resume"
 
 [node name="LevelCompletePanel" type="Control" parent="UI"]
 process_mode = 3
+z_index = 10
 visible = false
 layout_mode = 3
 anchors_preset = 15

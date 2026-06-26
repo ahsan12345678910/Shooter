@@ -20,6 +20,7 @@ extends Node2D
 @onready var _continue_btn: Button = $UI/GameOverPanel/CenterContainer/VBoxContainer/ContinueButton
 @onready var _share_button: Button = $UI/GameOverPanel/CenterContainer/VBoxContainer/ShareButton
 @onready var _restart_button: Button = $UI/GameOverPanel/CenterContainer/VBoxContainer/RestartButton
+@onready var _mobile_controls: Control = $UI/MobileControls
 
 var _continue_used: bool = false
 
@@ -76,6 +77,7 @@ func _on_level_started(level_number: int) -> void:
 	_hud_level_label.text = "Lv %d" % level_number
 	_level_complete_panel.hide()
 	_progress_bar.value = 0
+	_mobile_controls.mouse_filter = Control.MOUSE_FILTER_PASS
 
 
 func _on_level_progress_changed(killed: int, required: int) -> void:
@@ -95,12 +97,14 @@ func _on_level_completed(level_number: int, coins_reward: int) -> void:
 
 	_level_complete_panel.show()
 	_pause_button.visible = false
+	_mobile_controls.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
 func _on_next_level_pressed() -> void:
 	GameManager.set_paused(false)
 	_level_complete_panel.hide()
 	_pause_button.visible = true
+	_mobile_controls.mouse_filter = Control.MOUSE_FILTER_PASS
 	GameManager.advance_to_next_level()
 
 

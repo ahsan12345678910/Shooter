@@ -32,6 +32,7 @@ func _on_level_started(level_number: int) -> void:
 	if data["boss"]:
 		_spawn_boss(data["boss_hp"])
 		_boss_spawned = true
+		_enemies_to_spawn = maxi(0, _enemies_to_spawn - 1)
 
 
 func _on_level_completed(_level: int, _coins: int) -> void:

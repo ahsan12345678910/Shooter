@@ -21,6 +21,7 @@ var is_boss: bool = false
 var _move_time: float = 0.0
 var _drift_phase: float = 0.0
 var _shoot_timer: float = 0.0
+var _is_dying: bool = false
 
 static var _powerup_types: Array = [
 	Powerup.Type.EXTRA_LIFE,
@@ -109,11 +110,11 @@ func _physics_process(delta: float) -> void:
 
 	if global_position.y >= rect_size.y + margin:
 		GameManager.lose_life()
-		queue_free()
+		_remove_without_kill()
 		return
 
 	if global_position.x < -margin or global_position.x > rect_size.x + margin:
-		queue_free()
+		_remove_without_kill()
 
 
 func _fire_bullet() -> void:
@@ -131,7 +132,7 @@ func _fire_bullet() -> void:
 
 
 func _on_area_entered(area: Area2D) -> void:
-	if GameManager.is_game_over or not area.is_in_group("bullets"):
+	if _is_dying or GameManager.is_game_over or not area.is_in_group("bullets"):
 		return
 	if area.get("is_enemy_bullet"):
 		return
@@ -144,6 +145,7 @@ func _on_area_entered(area: Area2D) -> void:
 	if hp > 0:
 		return
 
+	_is_dying = true
 	GameManager.add_score(score_value)
 	if is_boss:
 		AudioManager.play_level_up()
@@ -185,4 +187,12 @@ func _die() -> void:
 	var explosion = preload("res://Explosion.tscn").instantiate()
 	get_parent().add_child(explosion)
 	explosion.global_position = global_position
+	queue_free()
+
+
+func _remove_without_kill() -> void:
+	if _is_dying:
+		return
+	_is_dying = true
+	GameManager.on_enemy_escaped()
 	queue_free()

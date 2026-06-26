@@ -1,10 +1,13 @@
 extends Node2D
 
+const SpriteUtils = preload("res://sprite_utils.gd")
+
 @onready var _particles: CPUParticles2D = $CPUParticles2D
 @onready var _flash: Sprite2D = $Flash
 
 
 func _ready() -> void:
+	SpriteUtils.apply_solid_sprite(_flash, Color(1.0, 0.75, 0.35))
 	_particles.emitting = true
 	_flash.scale = Vector2(0.4, 0.4)
 	_flash.modulate.a = 1.0
