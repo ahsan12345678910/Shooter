@@ -21,6 +21,7 @@ var _faster_bullets_time: float = 0.0
 var _double_shoot_time: float = 0.0
 var _shield_active: bool = false
 var _shield_hits: int = 0
+var _shield_ring: ColorRect = null
 
 @onready var sprite: Sprite2D = $Sprite2D
 
@@ -32,11 +33,13 @@ func _ready() -> void:
 	if UpgradeManager.shield_start:
 		_shield_active = true
 		_shield_hits = 1
+		call_deferred("_update_shield_visual")
 	await get_tree().process_frame
 	_mobile_controls = get_tree().get_first_node_in_group("mobile_controls")
 	if _mobile_controls and _mobile_controls.has_signal("shoot_requested"):
 		_mobile_controls.shoot_requested.connect(shoot)
 	GameManager.game_over.connect(_on_game_over)
+	_update_shield_visual()
 
 
 func _process(delta: float) -> void:
@@ -50,9 +53,21 @@ func _physics_process(_delta: float) -> void:
 
 	var direction := _get_movement_direction()
 	velocity.x = direction * speed
-	velocity.y = 0.0
+	velocity.y = _get_vertical_direction() * speed * 0.6
 	move_and_slide()
 	_clamp_to_screen()
+
+
+func _get_vertical_direction() -> float:
+	if _mobile_controls and _mobile_controls.use_joystick:
+		var joy: Node = _mobile_controls.get_node_or_null("BottomBar/LeftControls/VirtualJoystick")
+		if joy and joy.output != Vector2.ZERO:
+			return joy.output.y
+	if Input.is_action_pressed("ui_up"):
+		return -1.0
+	if Input.is_action_pressed("ui_down"):
+		return 1.0
+	return 0.0
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -89,6 +104,7 @@ func absorb_hit() -> bool:
 	if _shield_hits <= 0:
 		_shield_active = false
 	_shield_flash()
+	_update_shield_visual()
 	return true
 
 
@@ -179,6 +195,30 @@ func _vibrate_shoot() -> void:
 func _clamp_to_screen() -> void:
 	var viewport_size := get_viewport().get_visible_rect().size
 	position.x = clampf(position.x, margin, viewport_size.x - margin)
+	position.y = clampf(position.y, viewport_size.y * 0.65, viewport_size.y - margin)
+
+
+func _update_shield_visual() -> void:
+	if _shield_ring == null:
+		_shield_ring = ColorRect.new()
+		_shield_ring.color = Color(0.3, 0.7, 1.0, 0.0)
+		_shield_ring.size = Vector2(80, 80)
+		_shield_ring.position = Vector2(-40, -40)
+		_shield_ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(_shield_ring)
+	if _shield_active:
+		_pulse_shield()
+	else:
+		if _shield_ring:
+			_shield_ring.color.a = 0.0
+
+
+func _pulse_shield() -> void:
+	if not _shield_active or _shield_ring == null:
+		return
+	var tween := create_tween().set_loops()
+	tween.tween_property(_shield_ring, "color:a", 0.45, 0.5)
+	tween.tween_property(_shield_ring, "color:a", 0.15, 0.5)
 
 
 func _on_game_over() -> void:

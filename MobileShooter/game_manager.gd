@@ -20,6 +20,7 @@ var level_active: bool = false
 
 var coins: int = 0
 var total_coins_earned: int = 0
+var coin_multiplier: int = 1
 
 var _rate_prompted: bool = false
 
@@ -55,6 +56,7 @@ func reset_game() -> void:
 	enemies_killed_this_level = 0
 	enemies_required_this_level = 0
 	level_active = false
+	coin_multiplier = 1
 	get_tree().paused = false
 	score_changed.emit(score)
 	lives_changed.emit(lives)
@@ -76,7 +78,14 @@ func on_enemy_killed() -> void:
 
 
 func on_enemy_escaped() -> void:
-	_register_enemy_cleared()
+	if not level_active or is_game_over:
+		return
+	enemies_required_this_level = maxi(0, enemies_required_this_level - 1)
+	level_progress_changed.emit(enemies_killed_this_level, enemies_required_this_level)
+	if enemies_killed_this_level >= enemies_required_this_level and enemies_required_this_level > 0:
+		_complete_level()
+	elif enemies_required_this_level <= 0:
+		_complete_level()
 
 
 func _register_enemy_cleared() -> void:
@@ -108,7 +117,12 @@ func resume_after_continue() -> void:
 		AudioManager.play_music()
 	if enemies_killed_this_level < enemies_required_this_level:
 		level_active = true
-	check_and_complete_level()
+	else:
+		level_active = false
+		await get_tree().create_timer(1.2).timeout
+		if not is_game_over:
+			advance_to_next_level()
+			return
 	game_continued.emit()
 
 
@@ -139,7 +153,7 @@ func add_score(amount: int = 1) -> void:
 	score_changed.emit(score)
 	_try_update_high_score()
 	if score % 10 == 0:
-		add_coins(1)
+		add_coins(1 * coin_multiplier)
 	if not _rate_prompted and score >= RATE_PROMPT_SCORE:
 		_rate_prompted = true
 		var cfg := ConfigFile.new()

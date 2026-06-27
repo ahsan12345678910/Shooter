@@ -28,6 +28,30 @@ const ITEMS := [
 	},
 ]
 
+const CONSUMABLES := [
+	{
+		"label": "Nuke",
+		"desc": "Instantly destroy all enemies on screen right now",
+		"cost": 15,
+		"key": "consumable_nuke",
+		"signal": "nuke_used",
+	},
+	{
+		"label": "Coin Magnet",
+		"desc": "Earn 3x coins for the rest of this level",
+		"cost": 10,
+		"key": "consumable_magnet",
+		"signal": "magnet_used",
+	},
+	{
+		"label": "Extra Life (one run)",
+		"desc": "Gain +1 life right now, this run only",
+		"cost": 25,
+		"key": "consumable_life",
+		"signal": "life_used",
+	},
+]
+
 const UPGRADES_PATH := "user://upgrades.cfg"
 
 @onready var _coin_label: Label = $UI/Header/CoinLabel
@@ -70,6 +94,12 @@ func _build_coin_packs() -> void:
 		btn.custom_minimum_size = Vector2(160, 64)
 		btn.add_theme_font_size_override("font_size", 22)
 		btn.pressed.connect(IAPManager.purchase.bind(pack["id"]))
+		IAPManager.purchase_failed.connect(func(pid, _err):
+			if pid == pack["id"]:
+				btn.text = "Store unavailable"
+				await get_tree().create_timer(2.0).timeout
+				btn.text = pack["price"]
+		)
 		row.add_child(lbl)
 		row.add_child(btn)
 		_item_list.add_child(row)
@@ -89,6 +119,16 @@ func _build_list() -> void:
 	for item in ITEMS:
 		var owned: bool = bool(_cfg.get_value("owned", item["key"], false))
 		var row := _make_row(item, owned)
+		_item_list.add_child(row)
+
+	var cons_header := Label.new()
+	cons_header.text = "CONSUMABLES  (use anytime)"
+	cons_header.add_theme_font_size_override("font_size", 24)
+	cons_header.add_theme_color_override("font_color", Color(0.8, 1.0, 0.7))
+	_item_list.add_child(cons_header)
+
+	for item in CONSUMABLES:
+		var row := _make_consumable_row(item)
 		_item_list.add_child(row)
 
 
@@ -140,3 +180,62 @@ func _on_buy(item: Dictionary, btn: Button) -> void:
 		btn.text = "Need 🪙 %d" % item["cost"]
 		await get_tree().create_timer(1.2).timeout
 		btn.text = "🪙 %d" % item["cost"]
+
+
+func _make_consumable_row(item: Dictionary) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.custom_minimum_size = Vector2(0, 110)
+	row.add_theme_constant_override("separation", 20)
+
+	var info := VBoxContainer.new()
+	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	var title_lbl := Label.new()
+	title_lbl.text = item["label"]
+	title_lbl.add_theme_font_size_override("font_size", 28)
+	info.add_child(title_lbl)
+
+	var desc_lbl := Label.new()
+	desc_lbl.text = item["desc"]
+	desc_lbl.add_theme_color_override("font_color", Color(0.7, 0.9, 0.7))
+	desc_lbl.add_theme_font_size_override("font_size", 20)
+	desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+	info.add_child(desc_lbl)
+
+	row.add_child(info)
+
+	var btn := Button.new()
+	btn.text = "🪙 %d" % item["cost"]
+	btn.custom_minimum_size = Vector2(160, 72)
+	btn.add_theme_font_size_override("font_size", 22)
+	btn.pressed.connect(_on_buy_consumable.bind(item, btn))
+	row.add_child(btn)
+	return row
+
+
+func _on_buy_consumable(item: Dictionary, btn: Button) -> void:
+	if GameManager.spend_coins(item["cost"]):
+		btn.text = "✓ Used!"
+		_apply_consumable(item["key"])
+		await get_tree().create_timer(1.0).timeout
+		btn.text = "🪙 %d" % item["cost"]
+	else:
+		btn.text = "Need 🪙 %d" % item["cost"]
+		await get_tree().create_timer(1.2).timeout
+		btn.text = "🪙 %d" % item["cost"]
+
+
+func _apply_consumable(key: String) -> void:
+	match key:
+		"consumable_nuke":
+			var enemies := get_tree().get_nodes_in_group("enemies")
+			for e in enemies:
+				if e.has_method("_die"):
+					e._die()
+		"consumable_magnet":
+			GameManager.coin_multiplier = 3
+			get_tree().create_timer(60.0).timeout.connect(
+				func(): GameManager.coin_multiplier = 1
+			)
+		"consumable_life":
+			GameManager.add_life(1)

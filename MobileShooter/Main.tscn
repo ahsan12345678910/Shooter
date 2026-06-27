@@ -107,6 +107,28 @@ offset_right = 704.0
 offset_bottom = 118.0
 show_percentage = false
 
+[node name="PowerupLabel" type="Label" parent="UI/HUD"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 130.0
+offset_right = 500.0
+offset_bottom = 160.0
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
+theme_override_font_sizes/font_size = 18
+text = ""
+
+[node name="NewBestLabel" type="Label" parent="UI/HUD"]
+visible = false
+layout_mode = 0
+offset_left = 200.0
+offset_top = 40.0
+offset_right = 480.0
+offset_bottom = 80.0
+theme_override_colors/font_color = Color(1, 0.85, 0, 1)
+theme_override_font_sizes/font_size = 22
+text = "NEW BEST!"
+horizontal_alignment = 1
+
 [node name="PausePanel" type="Control" parent="UI"]
 process_mode = 3
 visible = false
@@ -256,6 +278,13 @@ theme_override_colors/font_color = Color(0.75, 0.85, 1, 1)
 theme_override_font_sizes/font_size = 24
 text = "Best: 0"
 horizontal_alignment = 1
+
+[node name="WatchAdButton" type="Button" parent="UI/GameOverPanel/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(280, 72)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 1, 0.6, 1)
+theme_override_font_sizes/font_size = 26
+text = "Watch Ad — Revive Free"
 
 [node name="ContinueButton" type="Button" parent="UI/GameOverPanel/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(280, 72)

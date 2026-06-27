@@ -3,10 +3,13 @@ extends Control
 signal shoot_requested
 
 const SETTINGS_PATH = "user://settings.cfg"
+const AUTO_FIRE_INTERVAL: float = 0.18
 
 @export var use_joystick: bool = false
 
 var movement_direction: float = 0.0
+var _auto_fire_timer: float = 0.0
+var _shoot_held: bool = false
 
 @onready var _button_row: HBoxContainer = $BottomBar/LeftControls/ButtonRow
 @onready var _virtual_joystick: Control = $BottomBar/LeftControls/VirtualJoystick
@@ -32,11 +35,13 @@ func _ready() -> void:
 	_left_button.button_up.connect(_on_left_up)
 	_right_button.button_down.connect(_on_right_down)
 	_right_button.button_up.connect(_on_right_up)
-	_shoot_button.button_down.connect(_on_shoot_pressed)
+	_shoot_button.button_down.connect(_on_shoot_held)
+	_shoot_button.button_up.connect(_on_shoot_released)
 	_virtual_joystick.value_changed.connect(_on_joystick_changed)
 	_joystick_toggle.toggled.connect(_on_joystick_toggled)
 
 	GameManager.game_over.connect(_on_game_over)
+	GameManager.game_continued.connect(_on_game_continued)
 
 	var cfg := ConfigFile.new()
 	if cfg.load(SETTINGS_PATH) == OK:
@@ -46,7 +51,7 @@ func _ready() -> void:
 	_update_button_direction()
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if GameManager.is_game_over:
 		movement_direction = 0.0
 		return
@@ -55,6 +60,12 @@ func _process(_delta: float) -> void:
 		movement_direction = _virtual_joystick.output.x
 	else:
 		_update_button_direction()
+
+	if _shoot_held and not GameManager.is_game_over and not GameManager.is_paused:
+		_auto_fire_timer -= delta
+		if _auto_fire_timer <= 0.0:
+			_auto_fire_timer = AUTO_FIRE_INTERVAL
+			shoot_requested.emit()
 
 
 func get_movement_direction() -> float:
@@ -114,15 +125,27 @@ func _on_joystick_changed(_vector: Vector2) -> void:
 		movement_direction = _virtual_joystick.output.x
 
 
-func _on_shoot_pressed() -> void:
+func _on_shoot_held() -> void:
 	if GameManager.is_game_over:
 		return
+	_shoot_held = true
 	shoot_requested.emit()
+	_auto_fire_timer = AUTO_FIRE_INTERVAL
+
+
+func _on_shoot_released() -> void:
+	_shoot_held = false
+	_auto_fire_timer = 0.0
 
 
 func _on_game_over() -> void:
 	movement_direction = 0.0
+	_shoot_held = false
 	_set_controls_enabled(false)
+
+
+func _on_game_continued() -> void:
+	_set_controls_enabled(true)
 
 
 func _set_controls_enabled(enabled: bool) -> void:

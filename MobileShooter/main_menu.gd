@@ -29,6 +29,12 @@ func _on_settings() -> void:
 	get_tree().change_scene_to_file("res://Settings.tscn")
 
 
+# IMPORTANT: Replace this URL with your real privacy policy page before submitting.
+# Free option: create a GitHub Gist or GitHub Pages page with your privacy policy text.
+# Minimum required text: what data you collect (none, or just crash logs), and your contact email.
+const PRIVACY_POLICY_URL := "https://YOUR-REAL-PRIVACY-POLICY-URL.com"
+
+
 func _on_privacy_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
-		OS.shell_open("https://YOUR-PRIVACY-POLICY-URL.com")
+		OS.shell_open(PRIVACY_POLICY_URL)

@@ -11,7 +11,24 @@ const PRODUCT_NO_ADS = "com.yourname.mobileshooter.remove_ads"
 
 
 func purchase(product_id: String) -> void:
-	push_warning("IAP not implemented yet — wire up plugin for: " + product_id)
+	# --- PLATFORM PLUGIN WIRING GOES HERE ---
+	# Android (GodotGooglePlayBilling plugin):
+	#   billing.purchase(product_id)
+	#   Connect billing.purchases_updated signal to _on_purchase_success()
+	#
+	# iOS (GodotIOSInAppPurchases plugin):
+	#   InAppPurchases.purchase({"productId": product_id})
+	#   Connect InAppPurchases.product_purchase_completed to _on_purchase_success()
+	#
+	# Until plugin is installed, show a message instead of giving free coins:
+	push_error("IAP plugin not installed. Product: " + product_id + " — no coins awarded.")
+	purchase_failed.emit(product_id, "IAP plugin not configured")
+	# DO NOT call _on_purchase_success() here — that gives coins for free.
+
+
+func on_platform_purchase_verified(product_id: String) -> void:
+	# Called by the platform plugin ONLY after payment is verified.
+	# Wire your plugin's success callback to call this function.
 	_on_purchase_success(product_id)
 
 
