@@ -19,9 +19,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -170.0
-offset_top = -220.0
+offset_top = -260.0
 offset_right = 170.0
-offset_bottom = 220.0
+offset_bottom = 260.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 16
@@ -62,6 +62,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 26
 text = "SETTINGS"
 
+[node name="HowToPlayButton" type="Button" parent="UI/VBox"]
+custom_minimum_size = Vector2(280, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "HOW TO PLAY"
+
 [node name="HighScoreLabel" type="Label" parent="UI/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.75, 0.85, 1, 1)
@@ -82,3 +88,86 @@ theme_override_colors/font_color = Color(0.5, 0.6, 0.8, 0.8)
 theme_override_font_sizes/font_size = 16
 text = "Privacy Policy"
 horizontal_alignment = 1
+
+[node name="HowToPlayPanel" type="Control" parent="UI"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Overlay" type="ColorRect" parent="UI/HowToPlayPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.04, 0.06, 0.11, 0.92)
+
+[node name="Panel" type="VBoxContainer" parent="UI/HowToPlayPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -420.0
+offset_right = 320.0
+offset_bottom = 420.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="UI/HowToPlayPanel/Panel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "HOW TO PLAY"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="UI/HowToPlayPanel/Panel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "space defender"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/HowToPlayPanel/Panel"]
+custom_minimum_size = Vector2(0, 620)
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="InstructionsLabel" type="Label" parent="UI/HowToPlayPanel/Panel/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.88, 0.92, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "1. Tap PLAY to start a level.
+
+2. Use ◀ and ▶ (bottom-left) to move your ship left and right.
+
+3. Hold the shoot button (bottom-right) to fire at enemies.
+
+4. Destroy every enemy in the level to complete it and earn coins.
+
+5. Don't let enemies reach the bottom of the screen — you lose a life.
+
+6. Collect power-ups for extra life, faster bullets, or double shoot.
+
+7. Defeat bosses for big coin bonuses on special levels.
+
+8. Spend coins to continue after game over, or visit the Shop for upgrades.
+
+9. Enable the joystick in Settings if you prefer drag-to-move controls."
+autowrap_mode = 3
+
+[node name="BackButton" type="Button" parent="UI/HowToPlayPanel/Panel"]
+custom_minimum_size = Vector2(280, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "BACK"

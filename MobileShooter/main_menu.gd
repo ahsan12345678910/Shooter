@@ -4,9 +4,12 @@ extends Node2D
 @onready var _start_btn: Button = $UI/VBox/StartButton
 @onready var _shop_btn: Button = $UI/VBox/ShopButton
 @onready var _settings_btn: Button = $UI/VBox/SettingsButton
+@onready var _how_to_play_btn: Button = $UI/VBox/HowToPlayButton
 @onready var _high_score_label: Label = $UI/VBox/HighScoreLabel
 @onready var _coin_label_menu: Label = $UI/VBox/MenuCoinLabel
 @onready var _privacy_label: Label = $UI/VBox/PrivacyLabel
+@onready var _how_to_play_panel: Control = $UI/HowToPlayPanel
+@onready var _how_to_play_back_btn: Button = $UI/HowToPlayPanel/Panel/BackButton
 
 
 func _ready() -> void:
@@ -16,8 +19,11 @@ func _ready() -> void:
 	_start_btn.pressed.connect(_on_start)
 	_shop_btn.pressed.connect(func(): get_tree().change_scene_to_file("res://Shop.tscn"))
 	_settings_btn.pressed.connect(_on_settings)
+	_how_to_play_btn.pressed.connect(_on_how_to_play)
+	_how_to_play_back_btn.pressed.connect(_on_how_to_play_back)
 	_privacy_label.gui_input.connect(_on_privacy_input)
 	_privacy_label.mouse_filter = Control.MOUSE_FILTER_STOP
+	_how_to_play_panel.hide()
 	AudioManager.play_music()
 
 
@@ -27,6 +33,14 @@ func _on_start() -> void:
 
 func _on_settings() -> void:
 	get_tree().change_scene_to_file("res://Settings.tscn")
+
+
+func _on_how_to_play() -> void:
+	_how_to_play_panel.show()
+
+
+func _on_how_to_play_back() -> void:
+	_how_to_play_panel.hide()
 
 
 # IMPORTANT: Replace this URL with your real privacy policy page before submitting.

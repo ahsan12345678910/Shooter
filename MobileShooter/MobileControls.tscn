@@ -1,7 +1,8 @@
-[gd_scene format=3 uid="uid://b2fhq2qra0m25"]
+[gd_scene load_steps=4 format=3 uid="uid://b2fhq2qra0m25"]
 
 [ext_resource type="Script" path="res://mobile_controls.gd" id="1_controls"]
 [ext_resource type="Script" path="res://virtual_joystick.gd" id="2_joystick"]
+[ext_resource type="Texture2D" path="res://assets/ui/shoot_btn_normal_256.png" id="3_shoot_icon"]
 
 [node name="MobileControls" type="Control"]
 layout_mode = 3
@@ -10,19 +11,20 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 1
+mouse_filter = 2
 script = ExtResource("1_controls")
 
 [node name="BottomBar" type="Control" parent="."]
-mouse_filter = 0
+custom_minimum_size = Vector2(0, 140)
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -240.0
+offset_top = -140.0
 grow_horizontal = 2
 grow_vertical = 0
+mouse_filter = 0
 
 [node name="LeftControls" type="Control" parent="BottomBar"]
 layout_mode = 1
@@ -30,10 +32,11 @@ anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 24.0
-offset_top = -200.0
+offset_top = -120.0
 offset_right = 280.0
 offset_bottom = -24.0
 grow_vertical = 0
+mouse_filter = 0
 
 [node name="ButtonRow" type="HBoxContainer" parent="BottomBar/LeftControls"]
 layout_mode = 1
@@ -65,6 +68,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 0
 script = ExtResource("2_joystick")
 
 [node name="Base" type="Panel" parent="BottomBar/LeftControls/VirtualJoystick"]
@@ -88,28 +92,33 @@ offset_top = 56.0
 offset_right = 120.0
 offset_bottom = 120.0
 
-[node name="ShootButton" type="Button" parent="BottomBar"]
-mouse_filter = 0
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -80.0
-offset_top = -128.0
-offset_right = 80.0
-offset_bottom = -32.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_font_sizes/font_size = 28
-text = "SHOOT"
-
 [node name="JoystickToggle" type="CheckButton" parent="BottomBar"]
+visible = false
 layout_mode = 0
 offset_left = 24.0
 offset_top = 8.0
 offset_right = 200.0
 offset_bottom = 48.0
-theme_override_font_sizes/font_size = 22
-text = "Joystick"
+focus_mode = 0
+text = ""
+
+[node name="ShootButton" type="TextureButton" parent="."]
+z_index = 10
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -140.0
+offset_top = -140.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 0
+focus_mode = 0
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("3_shoot_icon")

@@ -29,8 +29,6 @@ position = Vector2(360, 1100)
 
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="MobileControls" parent="UI" instance=ExtResource("4_mobile_controls")]
-
 [node name="HUD" type="Control" parent="UI"]
 layout_mode = 3
 anchors_preset = 10
@@ -304,3 +302,5 @@ custom_minimum_size = Vector2(240, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Restart"
+
+[node name="MobileControls" parent="UI" instance=ExtResource("4_mobile_controls")]

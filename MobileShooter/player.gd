@@ -116,6 +116,8 @@ func _shield_flash() -> void:
 
 func play_death() -> void:
 	sprite.modulate = Color(1, 1, 1, 0)
+	if _mobile_controls and _mobile_controls.has_method("set_shoot_button_state"):
+		_mobile_controls.set_shoot_button_state("normal")
 
 
 func revive() -> void:
@@ -153,6 +155,8 @@ func _apply_faster_bullets() -> void:
 func _apply_double_shoot() -> void:
 	_double_shoot_active = true
 	_double_shoot_time = powerup_duration
+	if _mobile_controls and _mobile_controls.has_method("set_shoot_button_state"):
+		_mobile_controls.set_shoot_button_state("doubleshoot")
 
 
 func _update_powerup_timers(delta: float) -> void:
@@ -165,6 +169,8 @@ func _update_powerup_timers(delta: float) -> void:
 		_double_shoot_time -= delta
 		if _double_shoot_time <= 0.0:
 			_double_shoot_active = false
+			if _mobile_controls and _mobile_controls.has_method("set_shoot_button_state"):
+				_mobile_controls.set_shoot_button_state("normal")
 
 
 func _get_movement_direction() -> float:
