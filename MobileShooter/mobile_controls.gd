@@ -74,6 +74,19 @@ func get_movement_direction() -> float:
 	return movement_direction
 
 
+func set_gameplay_active(active: bool) -> void:
+	visible = active
+	if not active:
+		_shoot_held = false
+		_auto_fire_timer = 0.0
+		movement_direction = 0.0
+		_left_held = false
+		_right_held = false
+		_set_controls_enabled(false)
+	else:
+		_set_controls_enabled(not GameManager.is_game_over)
+
+
 func set_shoot_button_state(state: String) -> void:
 	match state:
 		"normal":

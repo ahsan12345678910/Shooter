@@ -127,6 +127,8 @@ theme_override_font_sizes/font_size = 22
 text = "NEW BEST!"
 horizontal_alignment = 1
 
+[node name="MobileControls" parent="UI" instance=ExtResource("4_mobile_controls")]
+
 [node name="PausePanel" type="Control" parent="UI"]
 process_mode = 3
 visible = false
@@ -229,6 +231,7 @@ text = "Main Menu"
 
 [node name="GameOverPanel" type="Control" parent="UI"]
 process_mode = 3
+z_index = 20
 visible = false
 layout_mode = 3
 anchors_preset = 15
@@ -238,6 +241,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Overlay" type="ColorRect" parent="UI/GameOverPanel"]
+mouse_filter = 2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -302,5 +306,3 @@ custom_minimum_size = Vector2(240, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Restart"
-
-[node name="MobileControls" parent="UI" instance=ExtResource("4_mobile_controls")]

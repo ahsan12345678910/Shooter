@@ -119,7 +119,8 @@ func _on_level_started(level_number: int) -> void:
 	_hud_level_label.text = "Lv %d" % level_number
 	_level_complete_panel.hide()
 	_progress_bar.value = 0
-	_mobile_controls.mouse_filter = Control.MOUSE_FILTER_PASS
+	if _mobile_controls.has_method("set_gameplay_active"):
+		_mobile_controls.set_gameplay_active(true)
 
 
 func _on_level_progress_changed(killed: int, required: int) -> void:
@@ -139,14 +140,16 @@ func _on_level_completed(level_number: int, coins_reward: int) -> void:
 
 	_level_complete_panel.show()
 	_pause_button.visible = false
-	_mobile_controls.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if _mobile_controls.has_method("set_gameplay_active"):
+		_mobile_controls.set_gameplay_active(false)
 
 
 func _on_next_level_pressed() -> void:
 	GameManager.set_paused(false)
 	_level_complete_panel.hide()
 	_pause_button.visible = true
-	_mobile_controls.mouse_filter = Control.MOUSE_FILTER_PASS
+	if _mobile_controls.has_method("set_gameplay_active"):
+		_mobile_controls.set_gameplay_active(true)
 	GameManager.advance_to_next_level()
 
 
@@ -161,6 +164,10 @@ func _on_game_completed() -> void:
 	_level_complete_panel.hide()
 	_game_over_panel.show()
 	_pause_button.visible = false
+	if _mobile_controls.has_method("set_gameplay_active"):
+		_mobile_controls.set_gameplay_active(false)
+	get_tree().paused = false
+	GameManager.is_paused = false
 	AudioManager.play_level_up()
 	AudioManager.stop_music()
 
@@ -181,6 +188,10 @@ func _on_paused_changed(is_paused: bool) -> void:
 func _on_game_over() -> void:
 	_final_score_label.text = "Final Score: %d" % GameManager.score
 	_final_high_score_label.text = "Best: %d" % GameManager.high_score
+	get_tree().paused = false
+	GameManager.is_paused = false
+	if _mobile_controls.has_method("set_gameplay_active"):
+		_mobile_controls.set_gameplay_active(false)
 	_game_over_panel.show()
 	_pause_panel.hide()
 	_pause_button.visible = false
@@ -207,7 +218,8 @@ func _on_continue_pressed() -> void:
 			player.revive()
 		GameManager.resume_after_continue()
 		_pause_button.visible = true
-		_mobile_controls.mouse_filter = Control.MOUSE_FILTER_PASS
+		if _mobile_controls.has_method("set_gameplay_active"):
+			_mobile_controls.set_gameplay_active(true)
 	else:
 		_continue_btn.text = "Not enough coins!"
 		await get_tree().create_timer(1.5).timeout
@@ -238,7 +250,8 @@ func _on_ad_reward_earned() -> void:
 		player.revive()
 	GameManager.resume_after_continue()
 	_pause_button.visible = true
-	_mobile_controls.mouse_filter = Control.MOUSE_FILTER_PASS
+	if _mobile_controls.has_method("set_gameplay_active"):
+		_mobile_controls.set_gameplay_active(true)
 
 
 func _on_share_pressed() -> void:
